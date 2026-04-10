@@ -1,3 +1,12 @@
+# AI Functions v1 Examples
+
+Use-case walkthroughs demonstrating Databricks AI Functions (`ai_query`, `ai_classify`, `ai_summarize`, `ai_analyze_sentiment`) for LLM batch inference.
+
+- [Insurance Call Center Analysis](#insurance-call-center)
+- [Feature Engineering](#feature-engineering)
+
+---
+
 # Insurance Call Center
 
 The insurance call center operation is an important customer facing function for any insurance company. The call center is responsible for handling customer inquiries, processing claims, and providing support to policyholders. The operation of the call center can have a significant impact on customer satisfaction and retention, as well as the overall efficiency of the insurance company.
@@ -107,7 +116,7 @@ SELECT
 FROM customer_call_transcripts
 ```
 
-# Feature Engiineering
+# Feature Engineering
 
 Feature engineering is the process of transforming raw data into a numerical format that can be 
 used by machine learning algorithms. Text data often contains a lot of information that can be 

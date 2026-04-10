@@ -1,0 +1,54 @@
+# Configuration for IE Selected Pages Workflow
+# Modify these settings to customize the page classification and information extraction
+
+# LLM Model for information extraction
+LLM_MODEL: "databricks-claude-sonnet-4-5"
+
+# Page Classification Settings
+# These labels are used by ai_classify to categorize pages
+POSITIVE_LABEL: "Yes"
+NEGATIVE_LABEL: "No"
+CLASSIFICATION_PROMPT: |
+  You are an expert text classifier. Determine if the following document page content contains html tables
+
+  If the page contains one or more html tables, classify it as "Yes". Otherwise, classify it as "No".
+
+  Document text:
+
+
+# Extraction prompt for ai_query
+# This prompt guides the extraction of structured information from classified pages
+# CUSTOMIZE THIS PROMPT based on what information you want to extract
+EXTRACTION_PROMPT: |
+  You are an expert in information extraction. Extract key information from the following document page.
+
+  Extract the following if present:
+  1. PwS Id
+  2. Sample Catagory
+
+  Document text:
+
+# Response format for structured extraction output (JSON schema format)
+RESPONSE_FORMAT: |
+  {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "sample_collection_form_extraction",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "pws_id": {
+            "type": ["string", "null"],
+            "description": "Public Water System ID"
+          },
+          "sample_category": {
+            "type": ["string", "null"],
+            "description": "Sample category"
+          }
+        },
+        "required": ["pws_id", "sample_category"],
+        "additionalProperties": false
+      },
+      "strict": false
+    }
+  }
