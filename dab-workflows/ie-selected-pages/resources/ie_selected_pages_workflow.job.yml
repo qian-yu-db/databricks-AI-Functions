@@ -1,0 +1,86 @@
+resources:
+  jobs:
+    ie_selected_pages_workflow:
+      name: ie_selected_pages_workflow
+
+      environments:
+        - environment_key: serverless_env
+          spec:
+            client: "3"
+
+      tasks:
+        - task_key: clean_pipeline_tables
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../src/transformations/00_clean_pipeline_tables.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              output_volume_path: ${var.output_volume_path}
+              clean_pipeline_tables: ${var.clean_pipeline_tables}
+              checkpoint_base_path: ${var.checkpoint_base_path}
+              raw_table_name: ${var.raw_table_name}
+              page_content_table_name: ${var.page_content_table_name}
+              classified_pages_table_name: ${var.classified_pages_table_name}
+              extracted_info_table_name: ${var.extracted_info_table_name}
+              volume_name: ${var.volume_name}
+
+        - task_key: parse_documents
+          environment_key: serverless_env
+          depends_on:
+            - task_key: clean_pipeline_tables
+          notebook_task:
+            notebook_path: ../src/transformations/01_parse_documents.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              source_volume_path: ${var.source_volume_path}
+              output_volume_path: ${var.output_volume_path}
+              checkpoint_location: ${var.checkpoint_base_path}/01_parse_documents
+              table_name: ${var.raw_table_name}
+
+        - task_key: extract_page_content
+          depends_on:
+            - task_key: parse_documents
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../src/transformations/02_extract_page_content.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              checkpoint_location: ${var.checkpoint_base_path}/02_extract_page_content
+              source_table_name: ${var.raw_table_name}
+              table_name: ${var.page_content_table_name}
+
+        - task_key: classify_pages
+          depends_on:
+            - task_key: extract_page_content
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../src/transformations/03_classify_pages.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              checkpoint_location: ${var.checkpoint_base_path}/03_classify_pages
+              source_table_name: ${var.page_content_table_name}
+              table_name: ${var.classified_pages_table_name}
+
+        - task_key: extract_info_from_classified_pages
+          depends_on:
+            - task_key: classify_pages
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../src/transformations/04_extract_info_from_classified_pages.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              checkpoint_location: ${var.checkpoint_base_path}/04_extract_info_from_classified_pages
+              source_table_name: ${var.classified_pages_table_name}
+              table_name: ${var.extracted_info_table_name}
+
+      max_concurrent_runs: 1
+
+      # Optional: Add a schedule
+      # schedule:
+      #   quartz_cron_expression: "0 0 * * * ?"
+      #   timezone_id: "UTC"
