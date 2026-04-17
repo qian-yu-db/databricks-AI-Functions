@@ -25,12 +25,6 @@ variables:
   raw_table_name:
     description: Table name for raw parsed documents
     default: parsed_documents_raw
-  content_table_name:
-    description: Table name for extracted text
-    default: parsed_documents_content
-  agent_choice:
-    description: Agent choice for extracting key information
-    default: ai_query
   structured_table_name:
     description: Table name for structured data
     default: parsed_documents_structured
