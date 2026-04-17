@@ -22,9 +22,6 @@ dbutils.widgets.dropdown(
 )
 dbutils.widgets.text("raw_table_name", "parsed_documents_raw", "Raw table name")
 dbutils.widgets.text(
-    "content_table_name", "parsed_documents_content", "Content table name"
-)
-dbutils.widgets.text(
     "structured_table_name", "parsed_documents_structured", "Structured table name"
 )
 dbutils.widgets.text(
@@ -38,7 +35,6 @@ schema = dbutils.widgets.get("schema")
 output_volume_path = dbutils.widgets.get("output_volume_path")
 clean_pipeline = dbutils.widgets.get("clean_pipeline_tables")
 raw_table_name = dbutils.widgets.get("raw_table_name")
-content_table_name = dbutils.widgets.get("content_table_name")
 structured_table_name = dbutils.widgets.get("structured_table_name")
 checkpoint_base_path = dbutils.widgets.get("checkpoint_base_path")
 
@@ -131,14 +127,12 @@ def cleanup_pipeline():
     # Define all tables created by the pipeline
     tables_to_drop = [
         raw_table_name,
-        content_table_name,
         structured_table_name,
     ]
 
     # Define all checkpoint locations
     checkpoint_paths = [
         f"{checkpoint_base_path}/01_parse_documents",
-        f"{checkpoint_base_path}/02_extract_document_content",
         f"{checkpoint_base_path}/03_extract_key_info",
     ]
 
@@ -203,7 +197,7 @@ else:
     )
     print("\n📋 Tables that would be cleaned:")
     print("  - parsed_documents_raw")
-    print("  - parsed_documents_content")
+    print("  - parsed_documents_structured")
     print("\n🗂️  Checkpoint directories that would be cleaned:")
     print(
         "  - /Volumes/fins_genai/unstructured_documents/checkpoints/ai_parse_document_workflow/*"
